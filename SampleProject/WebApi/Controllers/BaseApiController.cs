@@ -29,7 +29,7 @@ namespace WebApi.Controllers
             return ControllerContext.Request.CreateResponse(HttpStatusCode.Conflict, msg ?? "The resource already exists.");
         }
 
-        public HttpResponseMessage ValidationFails(string[] msg)
+        public HttpResponseMessage ValidationFails(params string[] msg)
         {
             return ControllerContext.Request.CreateResponse(HttpStatusCode.BadRequest, msg ?? new[] { "Validation failed" });
         }

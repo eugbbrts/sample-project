@@ -43,7 +43,7 @@ namespace WebApi.Controllers
             if (!validationResult)
                 return ValidationFails(errorMessage);
 
-            var user = _createUserService.Create(userId, model.Name, model.Email, model.Type, model.AnnualSalary, model.Tags);
+            var user = _createUserService.Create(userId, model.Name, model.Email, model.Type, model.AnnualSalary, model.Age, model.Tags);
             return Found(new UserData(user));
         }
 
@@ -56,8 +56,16 @@ namespace WebApi.Controllers
             {
                 return DoesNotExist();
             }
-            _updateUserService.Update(user, model.Name, model.Email, model.Type, model.AnnualSalary, model.Tags);
-            return Found(new UserData(user));
+
+            try
+            {
+                _updateUserService.Update(user, model.Name, model.Email, model.Type, model.AnnualSalary, model.Age, model.Tags);
+                return Found(new UserData(user));
+            } 
+            catch(ArgumentNullException ex)
+            {
+                return ValidationFails(ex.Message);
+            }
         }
 
         [Route("{userId:guid}/delete")]

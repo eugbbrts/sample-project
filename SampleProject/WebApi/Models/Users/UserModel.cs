@@ -14,6 +14,7 @@ namespace WebApi.Models.Users
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
         public UserTypes Type { get; set; }
+        public int Age { get; set; } // tst comments: the age was missing in the model, but exists in the business entity and in the postman  request data
         public decimal? AnnualSalary { get; set; }
         public IEnumerable<string> Tags { get; set; }
     }
