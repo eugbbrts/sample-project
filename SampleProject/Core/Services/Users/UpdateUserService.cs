@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BusinessEntities;
 using Common;
 
@@ -12,7 +13,7 @@ namespace Core.Services.Users
             user.SetEmail(email);
             user.SetName(name);
             user.SetType(type);
-            user.SetMonthlySalary(annualSalary.Value / 12);
+            user.SetMonthlySalary(annualSalary.HasValue ? Math.Round(annualSalary.Value / 12, 2) : (decimal?)null); // Test comments: since the AnnualSalary is an optional property and allows null, MonthlySalary should also accept null
             user.SetAge(age);
             user.SetTags(tags);
         }
