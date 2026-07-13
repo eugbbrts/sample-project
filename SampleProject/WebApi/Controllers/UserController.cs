@@ -8,6 +8,7 @@ using WebApi.Models.Users;
 
 namespace WebApi.Controllers
 {
+    // Test comments: we assume the controller allows anonymous access only because of it is a part of a test app and we ignore the proper authentication and authorization
     [RoutePrefix("users")]
     public class UserController : BaseApiController
     {
@@ -28,6 +29,20 @@ namespace WebApi.Controllers
         [HttpPost]
         public HttpResponseMessage CreateUser(Guid userId, [FromBody] UserModel model)
         {
+            // Test comments: validation for an existing user, we cannot rely on the catching ravendb ConcurrencyException exception,
+            // and especially on the error messages like "using a non current etag", it is possible that the error message format
+            // will be changed in next versions of the ravendb or if we change the db engine to something else than ravendb
+            var existingUser = _getUserService.GetUser(userId);
+            if (existingUser != null)
+            {
+                return AlreadyExists($"A user with id: {userId} already exists");
+            }
+
+            // Test comments: it is good practice to use declarative validation rules for models (see the changes in the UserModel class)
+            (var validationResult, var errorMessage) = ValidateModel(model);
+            if (!validationResult)
+                return ValidationFails(errorMessage);
+
             var user = _createUserService.Create(userId, model.Name, model.Email, model.Type, model.AnnualSalary, model.Tags);
             return Found(new UserData(user));
         }
