@@ -12,6 +12,9 @@ namespace WebApi.Controllers
     [RoutePrefix("users")]
     public class UserController : BaseApiController
     {
+        private const int USERS_DEFAULT_TAKE = 20;
+        private const int USERS_MAX_TAKE = 100;
+
         private readonly ICreateUserService _createUserService;
         private readonly IDeleteUserService _deleteUserService;
         private readonly IGetUserService _getUserService;
@@ -110,9 +113,22 @@ namespace WebApi.Controllers
 
         [Route("list/tag")]
         [HttpGet]
-        public HttpResponseMessage GetUsersByTag(string tag)
+        public HttpResponseMessage GetUsersByTag(string tag, int skip = 0, int take = USERS_DEFAULT_TAKE)
         {
-            throw new NotImplementedException();
+            AssertParams(take);
+
+            var users = _getUserService.GetUsers(tags: new[] { tag })
+                                      .Skip(skip)
+                                      .Take(take)
+                                      .Select(q => new UserData(q))
+                                      .ToList();
+            return Found(users);
+        }
+
+        private void AssertParams(int? take)
+        {
+            if (take.HasValue && (take <= 0 || take > USERS_MAX_TAKE))
+                throw new Exception($"Incorrect value of \"take\" parameter: {take}");
         }
     }
 }

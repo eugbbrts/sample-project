@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using BusinessEntities;
+﻿using BusinessEntities;
 using Raven.Abstractions.Indexing;
 using Raven.Client.Indexes;
+using System.Linq;
 
 namespace Data.Indexes
 {
@@ -11,11 +11,12 @@ namespace Data.Indexes
         {
             Map = users => from user in users
                            select new
-                                  {
-                                      user.Name,
-                                      user.Email,
-                                      user.Type
-                                  };
+                           {
+                               user.Name,
+                               user.Email,
+                               user.Type,
+                               user.Tags,
+                           };
 
             Index(x => x.Type, FieldIndexing.NotAnalyzed);
         }
