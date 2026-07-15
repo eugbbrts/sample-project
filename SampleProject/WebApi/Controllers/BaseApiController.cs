@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -48,5 +49,19 @@ namespace WebApi.Controllers
             return (true, null);
         }
 
+        protected HttpResponseMessage NotAuthorized(string msg = null)
+        {
+            return ControllerContext.Request.CreateResponse(HttpStatusCode.Unauthorized, msg ?? "Not authorized.");
+        }
+
+        protected void AssertParams(int? take, int maxTake)
+        {
+            if (take.HasValue && (take <= 0 || take > maxTake))
+                throw new Exception($"Incorrect value of \"take\" parameter: {take}");
+        }
+        protected Guid GetCurrentUserId()
+        {
+            return new Guid("1422740e-6426-4c46-8445-3f5274a62424"); // test comments: for test purposes we just use a hard coded user id. In a real application we need to get the value based on the current authentication or admin logic.
+        }
     }
 }

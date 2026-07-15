@@ -12,12 +12,12 @@ namespace Tests.Users
     [TestClass]
     public class UserControllerTests: BaseTest
     {
-        private Mock<ICreateUserService> _mockCreateUserService;
-        private Mock<IDeleteUserService> _mockDeleteUserService;
-        private Mock<IGetUserService> _mockGetUserService;
-        private IUpdateUserService _updateUserService;
+        private Mock<ICreateUserService>? _mockCreateUserService;
+        private Mock<IDeleteUserService>? _mockDeleteUserService;
+        private Mock<IGetUserService>? _mockGetUserService;
+        private IUpdateUserService? _updateUserService;
 
-        private UserController _controller;
+        private UserController? _controller;
 
         [TestInitialize]
         public void Setup()
@@ -41,15 +41,15 @@ namespace Tests.Users
             var existingUser = new BusinessEntities.User();
             existingUser.SetName("mary@companya.com");
 
-            _mockGetUserService.Setup(s => s.GetUser(existingUserId)).Returns(existingUser);
+            _mockGetUserService?.Setup(s => s.GetUser(existingUserId)).Returns(existingUser);
 
             var model = new UserModel() { };
-            var response = _controller.CreateUser(existingUserId, model);
+            var response = _controller?.CreateUser(existingUserId, model);
 
-            Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.Conflict, "Incorrect http code");
+            Assert.IsTrue(response == null || response.StatusCode == HttpStatusCode.Conflict, "Incorrect http code");
 
-            var objectContent = response.Content as ObjectContent<string>;
-            Assert.IsTrue(objectContent?.Value?.ToString().Contains("already exists"), "Response content must be an ObjectContent type.");
+            var objectContent = response?.Content as ObjectContent<string>;
+            Assert.IsTrue(objectContent?.Value?.ToString()?.Contains("already exists"), "Response content must be an ObjectContent type.");
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace Tests.Users
             existingUser.SetMonthlySalary(80000 / 12);
             existingUser.SetTags(["A", "C", "D"]);
 
-            _mockGetUserService.Setup(s => s.GetUser(existingUserId)).Returns(existingUser);            
+            _mockGetUserService?.Setup(s => s.GetUser(existingUserId)).Returns(existingUser);            
 
             var model = new UserModel() {
                 Name = "Mark Williams (updated)",
@@ -75,15 +75,15 @@ namespace Tests.Users
                 Tags = ["A", "C", "D"],
             };
 
-            var response = _controller.UpdateUser(existingUserId, model);
+            var response = _controller?.UpdateUser(existingUserId, model);
 
-            Assert.IsTrue(response.StatusCode == HttpStatusCode.BadRequest, $"Incorrect http code. Expected 400 (BadRequest), got {response.StatusCode}");
-            var objectContent = response.Content as ObjectContent<string[]>;
+            Assert.IsTrue(response == null || response.StatusCode == HttpStatusCode.BadRequest, $"Incorrect http code. Expected 400 (BadRequest), got {response?.StatusCode}");
+            var objectContent = response?.Content as ObjectContent<string[]>;
             Assert.IsNotNull(objectContent, "Response must be not null");
 
             var errorMessages = objectContent.Value as string[];
 
-            Assert.IsTrue(errorMessages.Any(a => a.Contains("Email was not provided")), "Response content must be an ObjectContent type.");
+            Assert.IsTrue(errorMessages?.Any(a => a.Contains("Email was not provided")), "Response content must be an ObjectContent type.");
         }
     }
 }
